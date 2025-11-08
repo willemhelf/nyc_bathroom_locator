@@ -22,4 +22,4 @@ br_map = geopandas.GeoDataFrame(
 
 m = br_map.explore(tooltip=["Location", "Hours", "Open"])
 output_path = r'pch_final\base_map.html'
-m.save(output_path)
+#br_map.to_file('output.shp', encoding='utf-8')
