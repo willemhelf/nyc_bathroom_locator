@@ -1,13 +1,11 @@
 import geopandas
 import folium
-import api_test
+from dataframe import operational
 import io
 from folium.plugins import Draw, MousePosition, HeatMap
 from PySide6 import QtWidgets, QtWebEngineWidgets, QtCore
 
-
-main_frame = api_test.operational
-final_df = main_frame.rename(columns={'facility_name': 'Location', 'hours_of_operation': 'Hours', 'open': 'Open'})
+final_df = operational.rename(columns={'facility_name': 'Location', 'hours_of_operation': 'Hours', 'open': 'Open'})
 
 br_map = geopandas.GeoDataFrame(
     final_df, geometry=geopandas.points_from_xy(final_df["longitude"], final_df["latitude"], crs=4326)

@@ -1,39 +1,52 @@
 import sys
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QTableView
-from PyQt5.QtCore import QAbstractTableModel, Qt
-from api_test import operational
+from dataframe import final_df
 
-df = operational
-
-class pandasModel(QAbstractTableModel):
+class TableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, data):
-        QAbstractTableModel.__init__(self)
+        super().__init__()
         self._data = data
 
-    def rowCount(self, parent=None):
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            value = self._data.iloc[index.row(), index.column()]
+            return str(value)
+
+    def rowCount(self, index):
         return self._data.shape[0]
 
-    def columnCount(self, parent=None):
+    def columnCount(self, index):
         return self._data.shape[1]
 
-    def data(self, index, role=Qt.DisplayRole):
-        if index.isValid():
-            if role == Qt.DisplayRole:
-                return str(self._data.iloc[index.row(), index.column()])
-        return None
+    def headerData(self, section, orientation, role):
+        # section is the index of the column/row.
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return str(self._data.columns[section])
 
-    def headerData(self, col, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self._data.columns[col]
-        return None
+            if orientation == Qt.Vertical:
+                return str(self._data.index[section])
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    model = pandasModel(df)
-    view = QTableView()
-    view.setModel(model)
-    view.resize(800, 600)
-    view.show()
-    sys.exit(app.exec_())
+
+class MainWindow(QtWidgets.QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+
+        self.table = QtWidgets.QTableView()
+
+        data = final_df
+
+        self.model = TableModel(data)
+        self.table.setModel(self.model)
+
+        self.setCentralWidget(self.table)
+
+
+app=QtWidgets.QApplication(sys.argv)
+window=MainWindow()
+window.show()
+app.exec_()
