@@ -1,41 +1,39 @@
 import sys
-from PyQt5 import QtCore, QtGui
-Qt = QtCore.Qt
+import pandas as pd
+from PyQt5.QtWidgets import QApplication, QTableView
+from PyQt5.QtCore import QAbstractTableModel, Qt
 from api_test import operational
-from PyQt5 import QtWidgets
 
-table_view = QtWidgets.QTableView()
+df = operational
 
-class PandasModel(QtCore.QAbstractTableModel):
-    """
-    Class to populate a table view with a pandas dataframe
-    """
-    def __init__(self, data, parent=None):
-        QtCore.QAbstractTableModel.__init__(self, parent)
+class pandasModel(QAbstractTableModel):
+
+    def __init__(self, data):
+        QAbstractTableModel.__init__(self)
         self._data = data
 
     def rowCount(self, parent=None):
-        return len(self._data.values)
+        return self._data.shape[0]
 
     def columnCount(self, parent=None):
-        return self._data.columns.size
+        return self._data.shape[1]
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=Qt.DisplayRole):
         if index.isValid():
-            if role == QtCore.Qt.DisplayRole:
-                return str(self._data.iloc[index.row()][index.column()])
+            if role == Qt.DisplayRole:
+                return str(self._data.iloc[index.row(), index.column()])
         return None
 
     def headerData(self, col, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self._data.columns[col]
         return None
-    
-if __name__ == '__main__':
-    application = QtGui.QGuiApplication(sys.argv)
-    view = QtGui.QTableView()
-    model = PandasModel(operational)
-    view.setModel(model)
 
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    model = pandasModel(df)
+    view = QTableView()
+    view.setModel(model)
+    view.resize(800, 600)
     view.show()
-    sys.exit(application.exec_())
+    sys.exit(app.exec_())
