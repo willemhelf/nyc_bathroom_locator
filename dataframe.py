@@ -21,6 +21,7 @@ def clean_df(df):
     return df
 
 final_df = clean_df(operational)
-print(final_df)
+final_list = final_df.values.tolist()
+print(final_list)
 
 #bathrooms_csv = operational.to_csv('bathrooms.csv', index=False)
